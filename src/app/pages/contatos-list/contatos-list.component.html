@@ -1,0 +1,31 @@
+<input matInput placeholder="Busque contatos" [ngModel]="searchTerm$.value" (keyup)="searchTerm$.next($event.target.value);">
+<mat-table class="mat-elevation-z8" [dataSource]="contatosDataSource" matSort matSortActive="nome" matSortDirection="asc" matSortDisableClear>
+    <ng-container matColumnDef="nome">
+        <mat-header-cell *matHeaderCellDef><strong>Nome</strong></mat-header-cell>
+        <mat-cell *matCellDef="let contato">{{contato.nome}}</mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="cpf">
+        <mat-header-cell *matHeaderCellDef>CPF</mat-header-cell>
+        <mat-cell *matCellDef="let contato">{{contato.cpf}}</mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="email">
+        <mat-header-cell *matHeaderCellDef>E-mail</mat-header-cell>
+        <mat-cell *matCellDef="let contato">{{contato.email}}</mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="endereco">
+        <mat-header-cell *matHeaderCellDef>Endereco</mat-header-cell>
+        <mat-cell *matCellDef="let contato">{{contato.endereco.logradouro}}, {{contato.endereco.numero}}</mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="telefone">
+        <mat-header-cell *matHeaderCellDef>Telefone principal</mat-header-cell>
+        <mat-cell *matCellDef="let contato">{{contato.telefones[0]}}</mat-cell>
+    </ng-container>
+
+    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+</mat-table>
+<mat-paginator [length]="contatos" [pageSize]="3" [pageSizeOptions]="[3, 5, 10]"></mat-paginator>
