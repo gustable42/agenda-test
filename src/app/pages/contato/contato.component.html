@@ -1,0 +1,162 @@
+<h2>{{contato.get('cpf').value ? 'Editar contato' : 'Criar contato'}}</h2>
+
+<mat-grid-list cols="5" rowHeight="10vh" style="width: 90%; margin: 0 5%;">
+    <form [formGroup]="contato">
+        <mat-grid-tile [colspan]="3">
+            <mat-form-field class="form-input" style="margin-left: 0;">
+                <mat-label>Nome</mat-label>
+                <input matInput placeholder="Ex: Gilberto Almeida" formControlName="nome">
+                <span 
+                    *ngIf="(contato.controls.nome.touched || contato.controls.nome.dirty) && contato.controls.nome.errors"
+                    style="color: #ED5550; font-size: 0.8em;"
+                >
+                    Este campo é obrigatório.
+                </span>
+            </mat-form-field>
+        </mat-grid-tile>
+        <mat-grid-tile [colspan]="2">
+            <mat-form-field class="form-input" style="margin-right: 0;">
+                <mat-label>CPF</mat-label>
+                <input mask="000.000.000-00" (keyup)="checkCpf()" matInput placeholder="Ex: 065.177.721-62" formControlName="cpf">
+                <span 
+                    *ngIf="(contato.controls.cpf.touched || contato.controls.cpf.dirty) && contato.controls.cpf.errors"
+                    style="color: #ED5550; font-size: 0.8em;"
+                >
+                    {{contato.controls.cpf.errors?.cpfInvalido ? 'Este CPF é inválido.' : 'Este campo é obrigatório.' }}
+                </span>
+                <span style="color: #ED5550; font-size: 0.8em;" *ngIf="cpfCadastrado">Este CPF já foi cadastrado</span>
+            </mat-form-field>
+        </mat-grid-tile>
+        <div formGroupName="endereco">
+            <mat-grid-tile [colspan]="2">
+                <mat-form-field class="form-input" style="margin-left: 0;">
+                    <mat-label>CEP</mat-label>
+                    <input mask="00.000-000" (blur)="cep$.next($event.target.value)" matInput placeholder="Ex: 73.083-490" formControlName="cep">
+                    <span 
+                        *ngIf="(contato.get('endereco').get('cep').touched || contato.get('endereco').get('cep').dirty) && contato.get('endereco').get('cep').errors"
+                        style="color: #ED5550; font-size: 0.8em;"
+                    >
+                        Este campo é obrigatório.
+                    </span>
+                    <span 
+                        *ngIf="cepInvalido"
+                        style="color: #ED5550; font-size: 0.8em;"
+                    >
+                        CEP inválido.
+                    </span>
+                </mat-form-field>
+            </mat-grid-tile>
+            <mat-grid-tile [colspan]="2">
+                <mat-form-field class="form-input">
+                    <mat-label>Cidade</mat-label>
+                    <input matInput placeholder="Ex: Brasília" formControlName="cidade">
+                    <span 
+                        *ngIf="(contato.get('endereco').get('cidade').touched || contato.get('endereco').get('cidade').dirty) && contato.get('endereco').get('cidade').errors"
+                        style="color: #ED5550; font-size: 0.8em;"
+                    >
+                        Este campo é obrigatório.
+                    </span>
+                </mat-form-field>
+            </mat-grid-tile>
+            <mat-grid-tile [colspan]="1">
+                <mat-form-field class="form-input" style="margin-right: 0;">
+                    <mat-label>Estado</mat-label>
+                    <input mask="SS" matInput placeholder="Ex: DF" formControlName="estado">
+                    <span 
+                        *ngIf="(contato.get('endereco').get('estado').touched || contato.get('endereco').get('estado').dirty) && contato.get('endereco').get('estado').errors"
+                        style="color: #ED5550; font-size: 0.8em;"
+                    >
+                        Este campo é obrigatório.
+                    </span>
+                </mat-form-field>
+            </mat-grid-tile>
+            <mat-grid-tile [colspan]="4">
+                <mat-form-field class="form-input" style="margin-left: 0;">
+                    <mat-label>Logradouro</mat-label>
+                    <input matInput placeholder="Ex: Rua Alpino Jacinto" formControlName="logradouro">
+                    <span 
+                        *ngIf="(contato.get('endereco').get('logradouro').touched || contato.get('endereco').get('logradouro').dirty) && contato.get('endereco').get('logradouro').errors"
+                        style="color: #ED5550; font-size: 0.8em;"
+                    >
+                        Este campo é obrigatório.
+                    </span>
+                </mat-form-field>
+            </mat-grid-tile>
+            <mat-grid-tile [colspan]="1">
+                <mat-form-field class="form-input" style="margin-right: 0;">
+                    <mat-label>Número</mat-label>
+                    <input matInput placeholder="Ex: 40" formControlName="numero">
+                    <span 
+                        *ngIf="(contato.get('endereco').get('numero').touched || contato.get('endereco').get('numero').dirty) && contato.get('endereco').get('numero').errors"
+                        style="color: #ED5550; font-size: 0.8em;"
+                    >
+                        Este campo é obrigatório.
+                    </span>
+                </mat-form-field>
+            </mat-grid-tile>
+        </div>
+        <mat-grid-tile [colspan]="2">
+            <mat-form-field class="form-input" style="margin-left: 0;">
+                <mat-label>Email</mat-label>
+                <input matInput placeholder="Ex: teste@gmail.com" formControlName="email">
+                <span 
+                    *ngIf="(contato.get('email').touched || contato.get('email').dirty) && contato.get('email').errors"
+                    style="color: #ED5550; font-size: 0.8em;"
+                >
+                    Este campo é obrigatório.
+                </span>
+            </mat-form-field>
+        </mat-grid-tile>
+        <ng-container formArrayName="telefones">
+            <mat-grid-tile [colspan]="3" [rowspan]="3">
+                <div style="
+                    width: 100%;
+                    top: 0;
+                    position: absolute;
+                    overflow-y: scroll;"
+                >
+                    <mat-form-field 
+                        class="form-input" 
+                        style="margin-left: 0;"
+                    >
+                        <mat-chip-list #chipList aria-label="Lista de telefones">
+                            <mat-chip
+                              *ngFor="let telefone of contato.controls.telefones.value; index as i"
+                              removable="true"
+                              (removed)="remove(i, telefone)">
+                              {{telefone | mask:'(00) 0 0000-0000'}}
+                                <mat-icon matChipRemove>cancel</mat-icon>
+                            </mat-chip>
+                            <input
+                                mask="(00) 0 0000-0000"
+                                placeholder="Novo telefone..."
+                                [(ngModel)]="currentTelefone"
+                                [ngModelOptions]="{standalone: true}"
+                                [matChipInputFor]="chipList"
+                                [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                                matChipInputAddOnEnter="true"
+                                (matChipInputTokenEnd)="add($event.value)"
+                            >
+                        </mat-chip-list>
+                        <span 
+                            *ngIf="telefoneCadastrado"
+                            style="color: #ED5550; font-size: 0.8em;"
+                        >
+                            Este telefone já foi cadastrado.
+                        </span>
+                        <span 
+                            *ngIf="nenhumTelefoneCadastrado"
+                            style="color: #ED5550; font-size: 0.8em;"
+                        >
+                            Ao menos um telefone é necessário por contato.
+                        </span>
+                    </mat-form-field>
+                </div>
+            </mat-grid-tile>
+        </ng-container>
+    </form>
+</mat-grid-list>
+<div style="display: flex; flex-direction: row-reverse;">
+    <button mat-button mat-dialog-close color="primary">Cancelar</button>
+    <button (click)="sendForm()" mat-raised-button color="primary">Salvar</button>
+</div>

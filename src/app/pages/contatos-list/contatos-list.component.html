@@ -1,4 +1,13 @@
-<input matInput placeholder="Busque contatos" [ngModel]="searchTerm$.value" (keyup)="searchTerm$.next($event.target.value);">
+<p>
+    <mat-toolbar>
+        <span>Agenda</span>
+        <div style="display: flex; justify-content: space-between; width: 100%; margin-left: 5vw;">
+            <input matInput style="width: 80%; border: none; font-size: 0.8em;" placeholder="Busque contatos" [ngModel]="searchTerm$.value" (keyup)="searchTerm$.next($event.target.value);">
+            <button (click)="openDialog()" style="width: fit-content;" mat-raised-button color="primary">Adicionar um contato</button>
+        </div>
+    </mat-toolbar>
+</p>  
+
 <mat-table class="mat-elevation-z8" [dataSource]="contatosDataSource" matSort matSortActive="nome" matSortDirection="asc" matSortDisableClear>
     <ng-container matColumnDef="nome">
         <mat-header-cell *matHeaderCellDef><strong>Nome</strong></mat-header-cell>
@@ -7,7 +16,7 @@
 
     <ng-container matColumnDef="cpf">
         <mat-header-cell *matHeaderCellDef>CPF</mat-header-cell>
-        <mat-cell *matCellDef="let contato">{{contato.cpf}}</mat-cell>
+        <mat-cell *matCellDef="let contato">{{contato.cpf | mask:'000.000.000-00'}}</mat-cell>
     </ng-container>
 
     <ng-container matColumnDef="email">
@@ -22,10 +31,21 @@
 
     <ng-container matColumnDef="telefone">
         <mat-header-cell *matHeaderCellDef>Telefone principal</mat-header-cell>
-        <mat-cell *matCellDef="let contato">{{contato.telefones[0]}}</mat-cell>
+        <mat-cell *matCellDef="let contato">{{contato.telefones[0] | mask:'(00) 0 0000-0000'}}</mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="acoes">
+        <mat-header-cell *matHeaderCellDef>Ações</mat-header-cell>
+        <mat-cell *matCellDef="let contato">
+            <button (click)="openDialog(contato)" mat-icon-button color="primary">
+                <mat-icon>create</mat-icon>
+            </button>
+            <button (click)="deleteContato(contato.id)" mat-icon-button>
+                <mat-icon>delete</mat-icon>
+            </button>
+        </mat-cell>
     </ng-container>
 
     <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
     <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
 </mat-table>
-<mat-paginator [length]="contatos" [pageSize]="3" [pageSizeOptions]="[3, 5, 10]"></mat-paginator>
